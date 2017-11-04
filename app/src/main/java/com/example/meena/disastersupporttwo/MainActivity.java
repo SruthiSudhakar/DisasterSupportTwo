@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements Hospitals.CommunicationChannel{
+public class MainActivity extends AppCompatActivity implements Hospitals.CommunicationChannel, AdviceTab.CommunicationChannelTwo{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -145,12 +145,9 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                     Log.d("called","case1 called");
                     return graphData;
                 case 2: Timert timert= new Timert();
-                    return timert;
-                case 3: GraphGoal graphGoal= new GraphGoal(distanceSeries,goalSeries);
-                    Bundle args1 = new Bundle();
-                    args1.putStringArrayList("Dates", dates2);
-                    graphGoal.setArguments(args1);
-                    return graphGoal;*/
+                    return timert;*/
+                case 2: AdviceTab adviceTab= new AdviceTab();
+                    return adviceTab;
                 default: return new Fragment();
             }
         }
@@ -165,11 +162,11 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Hospitals";
                 case 1:
-                    return "SECTION 2";
+                    return "Shelter";
                 case 2:
-                    return "SECTION 3";
+                    return "Our Advice";
             }
             return null;
         }

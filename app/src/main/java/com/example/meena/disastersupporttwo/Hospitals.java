@@ -34,7 +34,7 @@ public class Hospitals extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab1, container, false);
+        View rootView = inflater.inflate(R.layout.hospitals_layout, container, false);
         /*distance_id= (EditText) rootView.findViewById(R.id.distance_id);
         time_id= (EditText) rootView.findViewById(R.id.time_id);
         send= (Button) rootView.findViewById(R.id.button);
