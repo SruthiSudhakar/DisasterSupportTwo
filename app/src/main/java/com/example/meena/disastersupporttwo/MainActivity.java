@@ -21,9 +21,12 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -72,10 +75,11 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
             }
         });
 
-        Request request = new Request.Builder()
+        /*Request request = new Request.Builder()
                 .url("http://www.publicobject.com/helloworld.txt")
                 .header("User-Agent", "OkHttp Example")
                 .build();
+                */
 
         AudioThread audioThreader = new AudioThread();
         audioThreader.execute();
@@ -197,12 +201,39 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         @Override
         protected Void doInBackground(String... params) {
             try {
+                Log.d("line reader", "skyfga isfhwajdfhbadksl");
                 url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
-                URLConnection urlConnection = url.openConnection();
+                HttpURLConnection client = null;
+                try {
+                    client = (HttpURLConnection) url.openConnection();
+                    client.setRequestMethod("POST");
+                    client.setRequestProperty("Key","98e2dfad93974691b8a871fe8c3d64e1");
+                    client.setDoInput(true);
+                    InputStream inputStream = client.getInputStream();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                    line="cfg";
+                    line = br.readLine();
+                }catch(Exception e){
+                    Log.d("line reader","I didnt work");
+                }
 
-                InputStream inputStream = urlConnection.getInputStream();
+               // url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
+                //URLConnection urlConnection = url.openConnection();
+                Log.d("line reader", "skyfga isfhwajdfhbadksl");
+
+                InputStream inputStream = client.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                line="cfg";
                 line = br.readLine();
+
+               // client.getIn
+                /*OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+                //writeStream(outputPost);
+                //InputStream inputStream = client.getInputStream();
+                line = br.readLine();
+                outputPost.flush();
+                outputPost.close();*/
+
                 Log.d("line reader",line);
             } catch (Exception e) {
             }
