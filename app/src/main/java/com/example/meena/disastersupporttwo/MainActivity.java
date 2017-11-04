@@ -207,24 +207,31 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                 try {
                     client = (HttpURLConnection) url.openConnection();
                     client.setRequestMethod("POST");
-                    client.setRequestProperty("Key","98e2dfad93974691b8a871fe8c3d64e1");
+                    client.setRequestProperty("Ocp-Apim-Subscription-Key","98e2dfad93974691b8a871fe8c3d64e1");
+                    client.setRequestProperty("Transfer-Encoding","chunked");
+                    client.setRequestProperty("Content-type","audio/wav");
                     client.setDoInput(true);
+                    Log.d("line reader", "0");
+                    Log.d("line reader", client.toString());
+
                     InputStream inputStream = client.getInputStream();
+                    Log.d("line reader", "1");
                     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                     line="cfg";
                     line = br.readLine();
+                    Log.d("line reader", line);
                 }catch(Exception e){
                     Log.d("line reader","I didnt work");
                 }
 
                // url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
                 //URLConnection urlConnection = url.openConnection();
-                Log.d("line reader", "skyfga isfhwajdfhbadksl");
+                //Log.d("line reader", "skyfga isfhwajdfhbadksl");
 
-                InputStream inputStream = client.getInputStream();
+               /* InputStream inputStream = client.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                 line="cfg";
-                line = br.readLine();
+                line = br.readLine();*/
 
                // client.getIn
                 /*OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
