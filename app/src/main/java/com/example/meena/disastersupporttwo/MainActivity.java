@@ -84,6 +84,11 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         AudioThread audioThreader = new AudioThread();
         audioThreader.execute();
 
+
+
+
+
+
     }
 
 
@@ -206,11 +211,13 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                 HttpURLConnection client = null;
                 try {
                     client = (HttpURLConnection) url.openConnection();
+
                     client.setRequestMethod("POST");
                     client.setRequestProperty("Ocp-Apim-Subscription-Key","98e2dfad93974691b8a871fe8c3d64e1");
                     client.setRequestProperty("Transfer-Encoding","chunked");
                     client.setRequestProperty("Content-type","audio/wav");
                     client.setDoInput(true);
+
                     Log.d("line reader", "0");
                     Log.d("line reader", client.toString());
 
