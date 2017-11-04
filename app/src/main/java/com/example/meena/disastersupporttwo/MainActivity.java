@@ -72,13 +72,13 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
             }
         });
 
-       /* Request request = new Request.Builder()
+        Request request = new Request.Builder()
                 .url("http://www.publicobject.com/helloworld.txt")
                 .header("User-Agent", "OkHttp Example")
                 .build();
 
         AudioThread audioThreader = new AudioThread();
-        audioThreader.execute();*/
+        audioThreader.execute();
 
     }
 
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
 
     }
 
-    /*public class AudioThread extends AsyncTask<String, Void, Void> {
+    public class AudioThread extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
             try {
@@ -220,6 +220,6 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
         }
-    }*/
+    }
 
 }
