@@ -218,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                     client.setRequestProperty("Content-type","audio/wav");
                     client.setDoInput(true);
 
-                    Log.d("line reader", "0");
                     Log.d("line reader", client.toString());
 
                     InputStream inputStream = client.getInputStream();
