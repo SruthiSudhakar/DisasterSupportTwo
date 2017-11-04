@@ -1,5 +1,6 @@
 package com.example.meena.disastersupporttwo;
 
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -20,6 +21,12 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class MainActivity extends AppCompatActivity implements Hospitals.CommunicationChannel, AdviceTab.CommunicationChannelTwo{
 
     /**
@@ -36,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    URL url;
+    String line;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                         .setAction("Action", null).show();
             }
         });
+
+
 
     }
 
@@ -173,6 +184,35 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         //hi sruthi
         //hi sanjana
         //hi whats up sanj
+
+        public class AudioThread extends AsyncTask<String, Void, Void> {
+            @Override
+            protected Void doInBackground(String... params) {
+                try {
+                    url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
+                    URLConnection urlConnection = url.openConnection();
+
+                    InputStream inputStream = urlConnection.getInputStream();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                    line = br.readLine();
+                    Log.d("line reader",line);
+                } catch (Exception e) {
+                }
+
+                return null;
+            }
+
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+                super.onProgressUpdate(values);
+            }
+        }
 
     }
 }
