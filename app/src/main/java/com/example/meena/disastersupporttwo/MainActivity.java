@@ -2,6 +2,7 @@ package com.example.meena.disastersupporttwo;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +20,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Hospitals.CommunicationChannel{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -49,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -85,14 +88,14 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
+    /*
      * A placeholder fragment containing a simple view.
-     */
+
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
-         */
+
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
@@ -101,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Returns a new instance of this fragment for the given section
          * number.
-         */
+
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -132,9 +135,24 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position){
+                case 0: Hospitals hospitals= new Hospitals();
+                    return hospitals;
+                /*case 1: GraphData graphData= new GraphData(series);
+                    Bundle args = new Bundle();
+                    args.putStringArrayList("Dates", dates2);
+                    graphData.setArguments(args);
+                    Log.d("called","case1 called");
+                    return graphData;
+                case 2: Timert timert= new Timert();
+                    return timert;
+                case 3: GraphGoal graphGoal= new GraphGoal(distanceSeries,goalSeries);
+                    Bundle args1 = new Bundle();
+                    args1.putStringArrayList("Dates", dates2);
+                    graphGoal.setArguments(args1);
+                    return graphGoal;*/
+                default: return new Fragment();
+            }
         }
 
         @Override
