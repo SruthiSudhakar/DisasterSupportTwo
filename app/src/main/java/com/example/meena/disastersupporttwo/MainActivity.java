@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
             }
         });
 
-
+        AudioThread audioThreader = new AudioThread();
+        audioThreader.execute();
 
     }
 
@@ -185,34 +186,35 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         //hi sanjana
         //hi whats up sanj
 
-        public class AudioThread extends AsyncTask<String, Void, Void> {
-            @Override
-            protected Void doInBackground(String... params) {
-                try {
-                    url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
-                    URLConnection urlConnection = url.openConnection();
+    }
 
-                    InputStream inputStream = urlConnection.getInputStream();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-                    line = br.readLine();
-                    Log.d("line reader",line);
-                } catch (Exception e) {
-                }
+    public class AudioThread extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
+                URLConnection urlConnection = url.openConnection();
 
-                return null;
+                InputStream inputStream = urlConnection.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                line = br.readLine();
+                Log.d("line reader",line);
+            } catch (Exception e) {
             }
 
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-            }
-
-            @Override
-            protected void onProgressUpdate(Void... values) {
-                super.onProgressUpdate(values);
-            }
+            return null;
         }
 
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
     }
+
 }
