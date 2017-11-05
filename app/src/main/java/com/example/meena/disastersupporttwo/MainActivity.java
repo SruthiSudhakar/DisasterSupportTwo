@@ -170,14 +170,8 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
             switch (position){
                 case 0: Hospitals hospitals= new Hospitals();
                     return hospitals;
-                /*case 1: GraphData graphData= new GraphData(series);
-                    Bundle args = new Bundle();
-                    args.putStringArrayList("Dates", dates2);
-                    graphData.setArguments(args);
-                    Log.d("called","case1 called");
-                    return graphData;
-                case 2: Timert timert= new Timert();
-                    return timert;*/
+                case 1: SheltersTab sheltersTab= new SheltersTab();
+                    return sheltersTab;
                 case 2: AdviceTab adviceTab= new AdviceTab();
                     return adviceTab;
                 default: return new Fragment();
