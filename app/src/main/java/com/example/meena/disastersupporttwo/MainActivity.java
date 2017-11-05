@@ -1,6 +1,10 @@
 package com.example.meena.disastersupporttwo;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -21,14 +25,24 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Hospitals.CommunicationChannel, AdviceTab.CommunicationChannelTwo{
 
@@ -48,11 +62,36 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
     private ViewPager mViewPager;
     URL url;
     String line;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    protected boolean shouldAskPermissions() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+    @TargetApi(23)
+    protected void askPermissions() {
+        String[] permissions = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE"
+        };
+        int requestCode = 200;
+        requestPermissions(permissions, requestCode);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (shouldAskPermissions()) {
+            askPermissions();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
 
         AudioThread audioThreader = new AudioThread();
         audioThreader.execute();
+
+
 
 
 
@@ -205,29 +246,181 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
     public class AudioThread extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
+
+            DataOutputStream dos = null;
+            int bytesRead, bytesAvailable, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1024; // 1024*1024 = 1MB.  212144 is a quarter MB.
+            FileInputStream fileInputStream = null;
             try {
+                fileInputStream = new FileInputStream(new File(android.os.Environment.getExternalStorageDirectory(),"hello.wav"));
+            }
+            catch(FileNotFoundException fnfe){
+                Log.d("thisishard",""+fnfe.toString());
+            }
+            try{
+                URL url = new URL("https://speech.platform.bing.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US");
+
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                //method
+                conn.setRequestMethod("POST");
+                conn.setChunkedStreamingMode(0);
+                conn.setRequestProperty("Transfer-Encoding", "chunked");
+                conn.setRequestProperty("Accept","application/json;text/xml");
+                conn.setRequestProperty("Host","speech.platform.bing.com");
+                //header
+                conn.setRequestProperty("content-length", String.valueOf(fileInputStream.available()));
+                conn.setRequestProperty("Content-Type", "audio/wav; codec=\"audio/pcm\"; samplerate=16000;");
+                conn.setRequestProperty("Ocp-Apim-Subscription-Key","4b742e0d726944f2a1fd877935a67f23");
+                //conn.setRequestProperty("Authorization", "Bearer "+ "4b742e0d726944f2a1fd877935a67f23" );
+                conn.setReadTimeout(22222230);
+                conn.setDoOutput(true);
+
+                conn.connect();
+
+                dos = new DataOutputStream(conn.getOutputStream());
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                while (bytesRead > 0)
+                {
+                    try {
+                        dos.write(buffer, 0, bufferSize);
+                    } catch (OutOfMemoryError oome) {
+
+                        oome.printStackTrace();
+                        fileInputStream.close();
+                        throw new Exception("Out Of Memory!");
+                    }
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(
+                                conn.getInputStream()));
+                String decodedString;
+                while ((decodedString = in.readLine()) != null) {
+                    Log.d("thisishard",""+(decodedString));
+                }
+
+            }
+
+            catch (Exception e)
+            {
+                Log.d("thisishard",""+(e.toString()));
+            }
+            /*try {
                 Log.d("line reader", "skyfga isfhwajdfhbadksl");
-                url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
-                HttpURLConnection client = null;
+                  url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
+               /* curl -v -X POST "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-us&format=detailed"
+                        -H "Transfer-Encoding: chunked" -H "Ocp-Apim-Subscription-Key: 98e2dfad93974691b8a871fe8c3d64e1" -H
+                "Content-type: audio/wav; codec=audio/pcm; samplerate=16000" --data-binary @Desktop/hello-1.wav
+                */
+               /*HttpURLConnection client = null;
                 try {
                     client = (HttpURLConnection) url.openConnection();
+                    Log.d("line reader", client.toString());
+
+                    //ArrayList<String> parameters = new ArrayList<String>();
+                   // parameters.add(R.layout);
 
                     client.setRequestMethod("POST");
                     client.setRequestProperty("Ocp-Apim-Subscription-Key","98e2dfad93974691b8a871fe8c3d64e1");
+                    client.setChunkedStreamingMode(0);
+                    //client.setRequestProperty("Authorization","Bearer"+"98e2dfad93974691b8a871fe8c3d64e1");
                     client.setRequestProperty("Transfer-Encoding","chunked");
                     client.setRequestProperty("Content-type","audio/wav");
-                    client.setDoInput(true);
+                    client.setRequestProperty("codec","audio/pcm");
+                    client.setRequestProperty("samplerate","16000");
+                   // client.setRequestProperty("Accept", "application/json;text/xml");
+                   // client.setRequestProperty("Host","speech.platform.bing.com");
 
-                    Log.d("line reader", client.toString());
+                    File file = new File(getFilesDir(),"hello-1.wav");
+                    byte[] data = new byte[(int)file.length()];
+                    FileOutputStream os = new FileOutputStream(file);
+                    os.write(data);
+                    os.close();
 
-                    InputStream inputStream = client.getInputStream();
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+                    int read;
+                    byte[] buff = new byte[1024];
+                    while ((read=in.read(buff))>0)
+                    {
+                        outputStream.write(buff, 0, read);
+
+                    }
+                    //outputStream.flush();
+                    byte[] audioBytes = outputStream.toByteArray();
+
+                    outputStream.writeTo(os);
+                    Log.d("linereaders:FOS",""+os);
+
+                    client.connect();
+
+
+                   /* client.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
+                    writer.write(getQuery());
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+
+                    //client.
+                   // client.setDoInput(true);
+
+                    Log.d("line readers", client.toString());
+                    //HttpResponseCache abc = new HttpResponseCache();
+
+                    //Log.d("line readers", client.getHeaderField());
+                    Log.d("line readers", client.getResponseMessage());
+                    Log.d("line readers", client.getResponseCode()+"");
+                   /* Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+                    Log.d("line readers", client.toString());
+
+                    try {
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String linea;
+                        while ((linea = bufferedReader.readLine()) != null) {
+                            stringBuilder.append(linea).append("\n");
+                        }
+                        bufferedReader.close();
+                        line =  stringBuilder.toString();
+                        Log.d("linereadersajfh",line+"");
+                    }
+                    finally{
+                        client.disconnect();
+                    }
+
+
+
+                   /* InputStream inputStream = client.getInputStream();
                     Log.d("line reader", "1");
                     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                     line="cfg";
                     line = br.readLine();
                     Log.d("line reader", line);
+
                 }catch(Exception e){
-                    Log.d("line reader","I didnt work");
+                    Log.d("line reader",""+e);
                 }
 
                // url = new URL("https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-US&format=detailed");
@@ -245,11 +438,11 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
                 //InputStream inputStream = client.getInputStream();
                 line = br.readLine();
                 outputPost.flush();
-                outputPost.close();*/
+                outputPost.close();
 
-                Log.d("line reader",line);
+                Log.d("line reader","sgkafjdh");
             } catch (Exception e) {
-            }
+            }*/
 
             return null;
         }
