@@ -5,9 +5,11 @@ import android.annotation.TargetApi;
 import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -92,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
         if (shouldAskPermissions()) {
             askPermissions();
         }
+
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        Log.d("thisishard",permission+"");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -252,12 +257,14 @@ public class MainActivity extends AppCompatActivity implements Hospitals.Communi
             byte[] buffer;
             int maxBufferSize = 1024; // 1024*1024 = 1MB.  212144 is a quarter MB.
             FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(new File(android.os.Environment.getExternalStorageDirectory(),"hello.wav"));
+            //String path = context.getFilesDir().getAbsolutePath();
+           /* try {
+                //fileInputStream = new FileInputStream(new File("root/res/raw/hello.wav"));
+                //Environment.getRootDirectory()
             }
             catch(FileNotFoundException fnfe){
                 Log.d("thisishard",""+fnfe.toString());
-            }
+            }*/
             try{
                 URL url = new URL("https://speech.platform.bing.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US");
 
